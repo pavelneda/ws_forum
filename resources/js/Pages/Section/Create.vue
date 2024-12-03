@@ -7,13 +7,12 @@ import InputLabel from "@/Components/InputLabel.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 
 export default {
-    name: "Index",
+    name: "Create",
     components: {PrimaryButton, InputLabel, InputError, TextInput, Head, AuthenticatedLayout},
 
     data(){
         return {
             title: '',
-            errors: null,
         }
     },
 
@@ -54,7 +53,7 @@ export default {
                             autofocus
                         />
 
-                        <InputError class="mt-2" :message="errors" />
+                        <InputError class="mt-2" :message="this.$page.props.errors.title" />
 
                         <PrimaryButton @click="store" class="mt-4">Create</PrimaryButton>
                     </div>

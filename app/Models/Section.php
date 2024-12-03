@@ -8,4 +8,9 @@ class Section extends Model
 {
     protected $table = 'sections';
     protected $guarded = false;
+
+    public function branches()
+    {
+        return $this->hasMany(Branch::class, 'section_id', 'id');
+    }
 }
