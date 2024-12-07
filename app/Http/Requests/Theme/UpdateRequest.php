@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\Branch;
+namespace App\Http\Requests\Theme;
 
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -23,8 +23,7 @@ class UpdateRequest extends FormRequest
     {
         return [
             'title' => 'required|string|max:255',
-            'section_id' => 'required|integer|exists:sections,id',
-            'parent_id' => 'nullable|integer|exists:branches,id',
+            'description' => 'nullable|string|max:255',
         ];
     }
 }

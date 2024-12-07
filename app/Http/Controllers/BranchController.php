@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Branch\StoreRequest;
 use App\Http\Requests\Branch\UpdateRequest;
 use App\Http\Resources\Branch\BranchResource;
+use App\Http\Resources\Branch\BranchWithChildrenResource;
 use App\Http\Resources\Section\SectionResource;
 use App\Models\Branch;
 use App\Models\Section;
@@ -49,7 +50,7 @@ class BranchController extends Controller
      */
     public function show(Branch $branch)
     {
-        $branch = BranchResource::make($branch)->resolve();
+        $branch = BranchWithChildrenResource::make($branch)->resolve();
         return Inertia::render('Branch/Show', compact('branch'));
     }
 
@@ -58,7 +59,11 @@ class BranchController extends Controller
      */
     public function edit(Branch $branch)
     {
-        //
+        $sections = Section::all();
+        $sections = SectionResource::collection($sections)->resolve();
+        $branch = BranchResource::make($branch)->resolve();
+
+        return Inertia::render('Branch/Edit' , compact('sections', 'branch'));
     }
 
     /**
@@ -66,7 +71,9 @@ class BranchController extends Controller
      */
     public function update(UpdateRequest $request, Branch $branch)
     {
-        //
+        $data = $request->validated();
+        $branch->update($data);
+        return Redirect::route('sections.index');
     }
 
     /**
@@ -74,6 +81,13 @@ class BranchController extends Controller
      */
     public function destroy(Branch $branch)
     {
-        //
+        $branch->delete();
+        return Redirect::back();
+    }
+
+    public function themeCreate(Branch $branch)
+    {
+        $branch = BranchResource::make($branch)->resolve();
+        return Inertia::render('Branch/Theme/Create', compact('branch'));
     }
 }
