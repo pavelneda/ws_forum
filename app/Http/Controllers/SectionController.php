@@ -56,7 +56,7 @@ class SectionController extends Controller
      */
     public function edit(Section $section)
     {
-        //
+        return Inertia::render('Section/Edit', compact('section'));
     }
 
     /**
@@ -64,7 +64,10 @@ class SectionController extends Controller
      */
     public function update(UpdateRequest $request, Section $section)
     {
-        //
+        $data = $request->validated();
+        $section->update($data);
+
+        return Redirect::route('sections.index');
     }
 
     /**
@@ -72,7 +75,8 @@ class SectionController extends Controller
      */
     public function destroy(Section $section)
     {
-        //
+        $section->delete();
+        return Redirect::back();
     }
 
     public function sectionBranches(Section $section)
