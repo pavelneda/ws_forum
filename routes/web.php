@@ -23,6 +23,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('sections', SectionController::class);
     Route::resource('branches', \App\Http\Controllers\BranchController::class);
     Route::resource('themes', \App\Http\Controllers\ThemeController::class);
+    Route::resource('messages', \App\Http\Controllers\MessageController::class);
 
     Route::get('/sections/{section}/branches', [SectionController::class, 'sectionBranches'])->name('sections.branches');
     Route::get('/sections/{section}/branches_except/{branch}', [SectionController::class, 'sectionBranchesExcept'])->name('sections.branches.except');

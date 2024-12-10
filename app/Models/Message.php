@@ -5,14 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Theme extends Model
+class Message extends Model
 {
     use SoftDeletes;
-
     protected $guarded = false;
+    protected $with = ['user:id,name'];
 
-    public function messages()
+    public function user()
     {
-        return $this->hasMany(Message::class, 'theme_id', 'id');
+        return $this->belongsTo(User::class, 'user_id', 'id');
     }
 }

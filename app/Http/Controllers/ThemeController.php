@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Theme\StoreRequest;
 use App\Http\Requests\Theme\UpdateRequest;
 use App\Http\Resources\Theme\ThemeResource;
+use App\Http\Resources\Theme\ThemeWithMessagesRosurce;
 use App\Models\Theme;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
@@ -44,7 +45,8 @@ class ThemeController extends Controller
      */
     public function show(Theme $theme)
     {
-        //
+        $theme = ThemeWithMessagesRosurce::make($theme)->resolve();
+        return Inertia::render('Theme/Show', compact('theme'));
     }
 
     /**

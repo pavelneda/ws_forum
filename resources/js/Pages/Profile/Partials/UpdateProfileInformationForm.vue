@@ -4,6 +4,7 @@ import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Link, useForm, usePage } from '@inertiajs/vue3';
+import {useTemplateRef} from "vue";
 
 defineProps({
     mustVerifyEmail: {
@@ -19,7 +20,22 @@ const user = usePage().props.auth.user;
 const form = useForm({
     name: user.name,
     email: user.email,
+    avatar: null,
+    _method: 'patch',
 });
+
+const previewFile = (e) => {
+    let file = e.target.files[0];
+    if(!file || file.type.indexOf('image/') === -1) return;
+    form.avatar = file;
+    let reader = new FileReader();
+
+    reader.onload = e => {
+        user.avatar_url = e.target.result;
+    }
+
+    reader.readAsDataURL(file);
+}
 </script>
 
 <template>
@@ -35,9 +51,22 @@ const form = useForm({
         </header>
 
         <form
-            @submit.prevent="form.patch(route('profile.update'))"
+            @submit.prevent="form.post(route('profile.update'))"
             class="mt-6 space-y-6"
         >
+            <div>
+                <InputLabel for="avatar" value="Avatar" />
+
+                <a @click.prevent="$refs.avatar_load.click()" href="">
+                    <img :src="user.avatar_url" :alt="form.name" class="bg-gray-300 rounded-full size-24">
+                </a>
+                <div hidden>
+                    <input @change="previewFile" type="file" accept="image/*" ref="avatar_load">
+                </div>
+
+                <InputError class="mt-2" :message="form.errors.avatar" />
+            </div>
+
             <div>
                 <InputLabel for="name" value="Name" />
 

@@ -63,7 +63,7 @@ export default {
                     <div class="bg-gray-50 p-6 py-3 rounded-b-3xl border border-gray-300">
                         <div v-for="theme in branch.themes"
                              class="flex items-center py-2 border-b border-b-gray-400 last:border-b-0">
-                            <Link :href="route('branches.show', branch.id)" class="block w-full">
+                            <Link :href="route('themes.show', theme.id)" class="block w-full">
                                 {{ theme.title }}
                                 <p class="text-sm">{{ theme.description }}</p>
                             </Link>
