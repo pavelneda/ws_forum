@@ -50,8 +50,8 @@ class User extends Authenticatable
 
     protected $appends = ['avatar_url'];
 
-    public function getAvatarUrlAttribute(): string
+    public function getAvatarUrlAttribute(): ?string
     {
-        return url('storage/' . $this->avatar);
+        return $this->avatar ? url('storage/' . $this->avatar) : null;
     }
 }

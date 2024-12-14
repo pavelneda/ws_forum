@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
+use Intervention\Image\Drivers\Gd\Driver;
+use Intervention\Image\ImageManager;
 
 class ProfileController extends Controller
 {
@@ -32,7 +34,16 @@ class ProfileController extends Controller
     {
         $data = $request->validated();
 
-        $data['avatar'] = Storage::disk('public')->put('avatars', $data['avatar']);
+        if ($data['avatar']) {
+            $data['avatar'] = Storage::disk('public')->put('avatars', $data['avatar']);
+            $manager = new ImageManager(new Driver());
+            $path = $manager->read('storage/' . $data['avatar'])->resize(100, 100);
+            $path->save();
+        }
+
+        if ($request->user()->avatar) {
+            Storage::disk('public')->delete($request->user()->avatar);
+        }
 
         $request->user()->fill($data);
 
@@ -41,6 +52,7 @@ class ProfileController extends Controller
         }
 
         $request->user()->save();
+
 
         return Redirect::route('profile.edit');
     }

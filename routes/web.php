@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\MessageController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SectionController;
 use Illuminate\Foundation\Application;
@@ -24,6 +25,9 @@ Route::middleware('auth')->group(function () {
     Route::resource('branches', \App\Http\Controllers\BranchController::class);
     Route::resource('themes', \App\Http\Controllers\ThemeController::class);
     Route::resource('messages', \App\Http\Controllers\MessageController::class);
+
+    Route::post('/messages/{message}/likes', [MessageController::class, 'toggleLike'])->name('messages.toggleLike');
+    Route::post('/messages/{message}/compliant', [MessageController::class, 'compliantStore'])->name('messages.compliant.store');
 
     Route::get('/sections/{section}/branches', [SectionController::class, 'sectionBranches'])->name('sections.branches');
     Route::get('/sections/{section}/branches_except/{branch}', [SectionController::class, 'sectionBranchesExcept'])->name('sections.branches.except');

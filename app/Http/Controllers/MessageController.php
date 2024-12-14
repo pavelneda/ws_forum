@@ -7,6 +7,7 @@ use App\Http\Requests\Message\UpdateRequest;
 use App\Http\Resources\Message\MessageResource;
 use App\Models\Message;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 
 class MessageController extends Controller
@@ -35,7 +36,13 @@ class MessageController extends Controller
         $data = $request->validated();
         $data['user_id'] = auth()->id();
 
+        $ids = Str::of($data['content'])->matchAll('/@[\d]+/')->unique()->transform(function ($id) {
+            return Str::of($id)->replaceMatches('/@/', '')->value();
+        });
+
         $message = Message::create($data);
+        $message->answeredUsers()->attach($ids);
+
         return MessageResource::make($message)->resolve();
     }
 
@@ -69,5 +76,16 @@ class MessageController extends Controller
     public function destroy(Message $message)
     {
         //
+    }
+
+    public function toggleLike(Message $message)
+    {
+        $message->likedUsers()->toggle(auth()->id());
+    }
+
+    public function compliantStore(\App\Http\Requests\Compliant\StoreRequest $request, Message $message)
+    {
+        $data = $request->validated();
+        $message->complainedUsers()->attach(auth()->id(), $data);
     }
 }
