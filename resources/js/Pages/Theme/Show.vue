@@ -73,6 +73,14 @@ export default {
                 })
 
             this.$refs.img_load.value = ''
+        },
+
+        formatTextBold(){
+            if (!window.getSelection().toString()) return;
+
+            const range = window.getSelection().getRangeAt(0);
+            const strong = document.createElement('strong');
+            range.surroundContents(strong);
         }
     },
 }
@@ -94,7 +102,7 @@ export default {
             <div class="mx-auto max-w-7xl space-y-6 sm:px-6 lg:px-8">
                 <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
                     <div v-if="theme.messages.length" v-for="message in theme.messages"
-                         class="p-6 flex border-b border-b-gray-200">
+                         class="p-6 flex border-b border-b-gray-200" :id="message.id">
                         <div class="w-1/6 pr-6 text-center border-r border-r-gray-200">
                             <div class="rounded-full bg-gray-500 size-24 mx-auto overflow-hidden">
                                 <img v-if="message.user.avatar_url" :src="message.user.avatar_url"
@@ -146,6 +154,7 @@ export default {
                                           d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"/>
                                 </svg>
                             </a>
+                            <a href="" class="block text-xl ml-3 font-bold" @click.prevent="formatTextBold">B</a>
                             <input @change="storeImage" hidden type="file" accept="image/*" ref="img_load">
                         </div>
                         <div ref="editor" contenteditable="true"

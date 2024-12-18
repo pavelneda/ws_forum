@@ -36,6 +36,9 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/images', [\App\Http\Controllers\ImageController::class, 'store'])->name('images.store');
 
+    Route::get('/admin', [\App\Http\Controllers\Admin\MainController::class, 'index'])->name('admin.main.index');
+    Route::get('/admin/complaints', [\App\Http\Controllers\Admin\ComplaintController::class, 'index'])->name('admin.complaints.index');
+
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
