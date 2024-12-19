@@ -10,6 +10,15 @@ export default {
     components: {AdminLayout, SecondaryButton, PrimaryButton, Head, Link},
 
     props: ['complaints'],
+
+    methods:{
+        updateStatus(complaint){
+            axios.patch(route('admin.complaints.update', complaint.id))
+                .then(res => {
+                    complaint.status = res.data.status;
+                })
+        },
+    },
 }
 </script>
 
@@ -49,11 +58,12 @@ export default {
                             <Link :href="route('themes.show', complaint.theme_id) + `#${complaint.message_id}`">Link
                             </Link>
                         </td>
-                        <td class="p-4">{{ complaint.status }}</td>
+                        <td class="p-4">{{ complaint.status ? 'Solved' : 'Not solved' }}</td>
                         <td class="p-4">
-                            <a href="" class="inline-block text-center">
+                            <a @click.prevent="updateStatus(complaint)" href="" class="inline-block text-center">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                     stroke-width="1.5" stroke="currentColor" class="size-6">
+                                     stroke-width="1.5" stroke="currentColor"
+                                     :class="['size-6', complaint.status ? 'stroke-green-500' : 'stroke-red-500']">
                                     <path stroke-linecap="round" stroke-linejoin="round"
                                           d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
                                 </svg>

@@ -4,8 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Compliant extends Model
+class Complaint extends Model
 {
+    protected $guarded = false;
+    protected $table = 'compliants';
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id', 'id');

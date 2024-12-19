@@ -206,6 +206,7 @@ const showingNavigationDropdown = ref(false);
                         </h3>
                         <Link class="border-t block py-2" :href="route('admin.main.index')">Statistics</Link>
                         <Link class="border-t block py-2" :href="route('admin.complaints.index')">Complaints</Link>
+                        <Link class="border-t block py-2" :href="route('admin.roles.index')">Roles</Link>
                     </div>
                     <div class="w-3/4">
                         <slot/>
