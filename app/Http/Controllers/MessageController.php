@@ -8,6 +8,7 @@ use App\Http\Resources\Message\MessageResource;
 use App\Models\Image;
 use App\Models\Message;
 use App\Models\User;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -51,6 +52,11 @@ class MessageController extends Controller
 
 
         $message = Message::create($data);
+
+        $ids->each(function ($id) use ($message) {
+            NotificationService::store($message, 'You have a new answer', $id);
+        });
+
         Image::whereIn('id', $imgIds)->update(['message_id' => $message->id]);
 
         Image::where('user_id', auth()->id())
@@ -103,7 +109,10 @@ class MessageController extends Controller
 
     public function toggleLike(Message $message)
     {
-        $message->likedUsers()->toggle(auth()->id());
+        $res = $message->likedUsers()->toggle(auth()->id());
+        if($res['attached']){
+            NotificationService::store($message, 'You have a new like');
+        }
     }
 
     public function compliantStore(\App\Http\Requests\Compliant\StoreRequest $request, Message $message)

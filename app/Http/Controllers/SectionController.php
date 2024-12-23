@@ -9,6 +9,7 @@ use App\Http\Resources\Section\SectionResource;
 use App\Http\Resources\Section\SectionWithBranchesResource;
 use App\Models\Branch;
 use App\Models\Section;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 
@@ -30,6 +31,7 @@ class SectionController extends Controller
      */
     public function create()
     {
+        Gate::authorize('create', Section::class);
         return Inertia::render('Section/Create');
     }
 
@@ -38,6 +40,8 @@ class SectionController extends Controller
      */
     public function store(StoreRequest $request)
     {
+        Gate::authorize('create', Section::class);
+
         $data = $request->validated();
         Section::firstOrCreate($data);
 

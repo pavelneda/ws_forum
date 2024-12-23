@@ -17,4 +17,9 @@ class Complaint extends Model
     {
         return $this->hasOneThrough('App\Models\Theme', 'App\Models\Message', 'id', 'id', 'message_id', 'theme_id');
     }
+
+    public function message()
+    {
+        return $this->belongsTo(Message::class, 'message_id', 'id');
+    }
 }

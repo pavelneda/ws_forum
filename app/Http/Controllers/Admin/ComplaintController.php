@@ -9,6 +9,7 @@ use App\Models\Complaint;
 use App\Models\Message;
 use App\Models\Theme;
 use App\Models\User;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -26,6 +27,9 @@ class ComplaintController extends Controller
         $complaint->update([
             'status' => !$complaint->status,
         ]);
+
+        $title = $complaint->status ? 'You complaint complete' : 'You complaint in work';
+        NotificationService::store($complaint->message, $title, $complaint->user_id);
 
         return ComplaintResource::make($complaint)->resolve();
     }

@@ -10,6 +10,7 @@ use App\Http\Resources\Section\SectionResource;
 use App\Models\Branch;
 use App\Models\Section;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 
@@ -81,6 +82,7 @@ class BranchController extends Controller
      */
     public function destroy(Branch $branch)
     {
+        Gate::authorize('delete', $branch);
         $branch->delete();
         return Redirect::back();
     }

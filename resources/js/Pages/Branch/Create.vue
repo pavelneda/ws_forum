@@ -12,7 +12,7 @@ export default {
 
     props: ['sections'],
 
-    data(){
+    data() {
         return {
             title: '',
             branches: null,
@@ -23,7 +23,7 @@ export default {
     },
 
     methods: {
-        store(){
+        store() {
             this.$inertia.post(route('branches.store'), {
                 title: this.title,
                 section_id: this.section_id,
@@ -31,7 +31,7 @@ export default {
             })
         },
 
-        getBranches(){
+        getBranches() {
             axios.get(`/sections/${this.section_id}/branches`)
                 .then(res => {
                     this.parent_id = null;
@@ -60,21 +60,32 @@ export default {
                     class="overflow-hidden bg-white shadow-sm sm:rounded-lg"
                 >
                     <div class="p-6 text-gray-900">
-                        <InputLabel for="section" value="Section" />
-                        <select @change="getBranches" v-model="section_id" id="section" class="mb-4 rounded-md border-gray-300 shadow-sm">
+                        <InputLabel for="section" value="Section"/>
+                        <select @change="getBranches" v-model="section_id" id="section"
+                                class="mb-4 rounded-md border-gray-300 shadow-sm">
                             <option :value="null" disabled selected>Select section</option>
-                            <option v-for="section in sections" :value="section.id">{{ section.title }}</option>
+                            <template v-for="section in sections">
+                                <template v-if="this.$page.props.auth.roles.some(role => {
+                                    return [
+                                        'editor',
+                                        `editor.${section.id}`,
+                                    ].includes(role);
+                                })">
+                                    <option :value="section.id">{{ section.title }}</option>
+                                </template>
+                            </template>
                         </select>
-                        <InputError class="mb-2" :message="this.$page.props.errors.section_id" />
+                        <InputError class="mb-2" :message="this.$page.props.errors.section_id"/>
 
-                        <InputLabel v-if="branches && branches.length > 0" for="branch" value="Branch" />
-                        <select v-if="branches && branches.length > 0" v-model="parent_id" id="branch" class="mb-4 rounded-md border-gray-300 shadow-sm">
+                        <InputLabel v-if="branches && branches.length > 0" for="branch" value="Branch"/>
+                        <select v-if="branches && branches.length > 0" v-model="parent_id" id="branch"
+                                class="mb-4 rounded-md border-gray-300 shadow-sm">
                             <option :value="null" disabled selected>Select branch</option>
                             <option v-for="branch in branches" :value="branch.id">{{ branch.title }}</option>
                         </select>
-                        <InputError class="mb-2" :message="this.$page.props.errors.parent_id" />
+                        <InputError class="mb-2" :message="this.$page.props.errors.parent_id"/>
 
-                        <InputLabel for="title" value="Title" />
+                        <InputLabel for="title" value="Title"/>
                         <TextInput
                             id="title"
                             type="text"
@@ -83,7 +94,7 @@ export default {
                             required
                             autofocus
                         />
-                        <InputError class="mt-2" :message="this.$page.props.errors.title" />
+                        <InputError class="mt-2" :message="this.$page.props.errors.title"/>
                         <PrimaryButton @click="store" class="mt-4">Create</PrimaryButton>
                     </div>
                 </div>
