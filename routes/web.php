@@ -50,6 +50,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/admin/users', [\App\Http\Controllers\Admin\UserController::class, 'index'])->name('admin.users.index');
     Route::patch('/admin/users/{user}/roles', [\App\Http\Controllers\Admin\UserController::class, 'toggleRoles'])->name('admin.users.toggleRoles');
 
+    Route::patch('/notifications/update_collection', [\App\Http\Controllers\NotificationController::class, 'updateCollection'])->name('notifications.updateCollection');
+
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');

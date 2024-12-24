@@ -1,13 +1,27 @@
 <script setup>
-import { ref } from 'vue';
+import {ref} from 'vue';
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
 import NavLink from '@/Components/NavLink.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
-import { Link } from '@inertiajs/vue3';
+import {Link, usePage} from '@inertiajs/vue3';
 
 const showingNavigationDropdown = ref(false);
+let isOpenNotifications = ref(false);
+
+const openNotification = () => {
+    isOpenNotifications.value = !isOpenNotifications.value
+
+    if (!usePage().props.auth.notifications_count) return;
+
+    axios.patch(route('notifications.updateCollection'), {
+        'ids': usePage().props.auth.notifications.map(notif => notif.id),
+    }).then(res => {
+        usePage().props.auth.notifications_count = res.data.count;
+    })
+}
+
 </script>
 
 <template>
@@ -53,6 +67,18 @@ const showingNavigationDropdown = ref(false);
                             </div>
                         </div>
 
+                        <div
+                            class="w-1/6 text-right ml-auto flex flex-col justify-center  text-sm font-medium leading-5 text-gray-500">
+                            <p @click="openNotification" class="cursor-pointer select-none">Notification <span class="ml-1">{{ $page.props.auth.notifications_count }}</span></p>
+                            <div class="relative text-left">
+                                <div v-if="$page.props.auth.notifications.length > 0 && isOpenNotifications"
+                                     class="absolute right-0 -top-1/2 bg-white p-4 border border-gray-300">
+                                    <Link :href="notification.url" v-for="notification in $page.props.auth.notifications" class="block border-b border-gray-300 last:border-b-0 p-2">
+                                        {{ notification.title }}
+                                    </Link>
+                                </div>
+                            </div>
+                        </div>
                         <div class="hidden sm:ms-6 sm:flex sm:items-center">
                             <!-- Settings Dropdown -->
                             <div class="relative ms-3">
@@ -196,13 +222,13 @@ const showingNavigationDropdown = ref(false);
                 v-if="$slots.header"
             >
                 <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-                    <slot name="header" />
+                    <slot name="header"/>
                 </div>
             </header>
 
             <!-- Page Content -->
             <main>
-                <slot />
+                <slot/>
             </main>
         </div>
     </div>
