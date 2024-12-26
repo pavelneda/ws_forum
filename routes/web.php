@@ -26,10 +26,6 @@ Route::middleware('auth')->group(function () {
     Route::resource('themes', \App\Http\Controllers\ThemeController::class);
     Route::resource('messages', \App\Http\Controllers\MessageController::class);
 
-    Route::get('/test', function (){
-        event(new \App\Events\TestEvent());
-    });
-
     Route::post('/messages/{message}/likes', [MessageController::class, 'toggleLike'])->name('messages.toggleLike');
     Route::post('/messages/{message}/compliant', [MessageController::class, 'compliantStore'])->name('messages.compliant.store');
 

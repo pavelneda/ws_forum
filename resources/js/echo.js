@@ -12,3 +12,8 @@ window.Echo = new Echo({
     forceTLS: (import.meta.env.VITE_REVERB_SCHEME ?? 'https') === 'https',
     enabledTransports: ['ws', 'wss'],
 });
+
+window.Echo.connector.pusher.connection.bind('connected', function () {
+    window.axios.defaults.headers.common['X-Socket-Id'] = window.Echo.socketId();
+});
+

@@ -1,5 +1,5 @@
 <script setup>
-import {ref} from 'vue';
+import {onMounted, ref} from 'vue';
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
@@ -9,6 +9,15 @@ import {Link, usePage} from '@inertiajs/vue3';
 
 const showingNavigationDropdown = ref(false);
 let isOpenNotifications = ref(false);
+
+
+onMounted(() => {
+    window.Echo.private(`notification.${usePage().props.auth.user.id}`)
+        .listen('.store', res => {
+            usePage().props.auth.notifications_count++;
+            usePage().props.auth.notifications.push(res.notification);
+        })
+})
 
 const openNotification = () => {
     isOpenNotifications.value = !isOpenNotifications.value
@@ -69,11 +78,14 @@ const openNotification = () => {
 
                         <div
                             class="w-1/6 text-right ml-auto flex flex-col justify-center  text-sm font-medium leading-5 text-gray-500">
-                            <p @click="openNotification" class="cursor-pointer select-none">Notification <span class="ml-1">{{ $page.props.auth.notifications_count }}</span></p>
+                            <p @click="openNotification" class="cursor-pointer select-none">Notification <span
+                                class="ml-1">{{ $page.props.auth.notifications_count }}</span></p>
                             <div class="relative text-left">
                                 <div v-if="$page.props.auth.notifications.length > 0 && isOpenNotifications"
                                      class="absolute right-0 -top-1/2 bg-white p-4 border border-gray-300">
-                                    <Link :href="notification.url" v-for="notification in $page.props.auth.notifications" class="block border-b border-gray-300 last:border-b-0 p-2">
+                                    <Link :href="notification.url"
+                                          v-for="notification in $page.props.auth.notifications"
+                                          class="block border-b border-gray-300 last:border-b-0 p-2">
                                         {{ notification.title }}
                                     </Link>
                                 </div>

@@ -11,12 +11,6 @@ export default {
 
     props: ['sections'],
 
-    created(){
-        window.Echo.channel('test')
-            .listen('.test', res => {
-                console.log(res);
-            })
-    },
 
 }
 </script>

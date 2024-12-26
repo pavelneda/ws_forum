@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\StoreMessageEvent;
+use App\Events\ToggleLikeEvent;
 use App\Http\Requests\Message\StoreRequest;
 use App\Http\Requests\Message\UpdateRequest;
 use App\Http\Resources\Message\MessageResource;
@@ -9,10 +11,7 @@ use App\Models\Image;
 use App\Models\Message;
 use App\Models\User;
 use App\Services\NotificationService;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
-use Inertia\Inertia;
+
 
 class MessageController extends Controller
 {
@@ -40,38 +39,25 @@ class MessageController extends Controller
         $data = $request->validated();
         $data['user_id'] = auth()->id();
 
-        $ids = Str::of($data['content'])->matchAll('/@[\d]+/')->unique()->transform(function ($id) {
-            return Str::of($id)->replaceMatches('/@/', '')->value();
-        })->filter(function ($id) {
-            return User::where('id', $id)->exists();
-        });
-
-        $imgIds = Str::of($data['content'])->matchAll('/img_id=[\d]+/')->unique()->transform(function ($id) {
-            return Str::of($id)->replaceMatches('/img_id=/', '')->value();
-        });
-
+        $ids = User::getCleanedUserIds($data);
+        $imgIds = getIds($data, '/img_id=[\d]+/', '/img_id=/');
 
         $message = Message::create($data);
+
+        broadcast(new StoreMessageEvent($message))->toOthers();
 
         $ids->each(function ($id) use ($message) {
             NotificationService::store($message, 'You have a new answer', $id);
         });
 
-        Image::whereIn('id', $imgIds)->update(['message_id' => $message->id]);
+        Image::updateMessageId($imgIds, $message);
 
-        Image::where('user_id', auth()->id())
-            ->whereNull('message_id')
-            ->get()
-            ->pluck('path')
-            ->each(function ($path) {
-                Storage::disk('public')->delete($path);
-            });
+        Image::cleanFromStorage();
 
-        Image::where('user_id', auth()->id())
-            ->whereNull('message_id')
-            ->delete();
+        Image::deleteFromTable();
 
         $message->answeredUsers()->attach($ids);
+
         return MessageResource::make($message)->resolve();
     }
 
@@ -113,6 +99,8 @@ class MessageController extends Controller
         if($res['attached']){
             NotificationService::store($message, 'You have a new like');
         }
+
+        broadcast(new ToggleLikeEvent($message))->toOthers();
     }
 
     public function compliantStore(\App\Http\Requests\Compliant\StoreRequest $request, Message $message)

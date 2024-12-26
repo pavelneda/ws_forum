@@ -1,6 +1,6 @@
 <script>
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import {Head, router} from "@inertiajs/vue3";
+import {Head, router, usePage} from "@inertiajs/vue3";
 import TextInput from "@/Components/TextInput.vue";
 import InputError from "@/Components/InputError.vue";
 import InputLabel from "@/Components/InputLabel.vue";
@@ -12,6 +12,22 @@ export default {
     components: {SecondaryButton, PrimaryButton, InputLabel, InputError, TextInput, Head, AuthenticatedLayout},
 
     props: ['theme'],
+
+    created(){
+        window.Echo.channel(`message.${this.theme.id}`)
+            .listen('.store', res => {
+                this.theme.messages.push(res.message);
+            })
+
+        window.Echo.channel(`message.like.${this.theme.id}`)
+            .listen('.store', res => {
+                this.theme.messages.filter(message => {
+                    return message.id === res.message.id
+                }).map(message => {
+                    message.likes = res.message.likes
+                })
+            })
+    },
 
     methods: {
         store() {
