@@ -7,6 +7,7 @@ use App\Events\ToggleLikeEvent;
 use App\Http\Requests\Message\StoreRequest;
 use App\Http\Requests\Message\UpdateRequest;
 use App\Http\Resources\Message\MessageResource;
+use App\Jobs\ProcessMessageJob;
 use App\Models\Image;
 use App\Models\Message;
 use App\Models\User;
@@ -38,25 +39,9 @@ class MessageController extends Controller
     {
         $data = $request->validated();
         $data['user_id'] = auth()->id();
-
-        $ids = User::getCleanedUserIds($data);
-        $imgIds = getIds($data, '/img_id=[\d]+/', '/img_id=/');
-
         $message = Message::create($data);
 
-        broadcast(new StoreMessageEvent($message))->toOthers();
-
-        $ids->each(function ($id) use ($message) {
-            NotificationService::store($message, 'You have a new answer', $id);
-        });
-
-        Image::updateMessageId($imgIds, $message);
-
-        Image::cleanFromStorage();
-
-        Image::deleteFromTable();
-
-        $message->answeredUsers()->attach($ids);
+        ProcessMessageJob::dispatch($message, $data);
 
         return MessageResource::make($message)->resolve();
     }
